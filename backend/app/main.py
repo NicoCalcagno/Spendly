@@ -5,7 +5,11 @@ from app.controllers import auth_router, categories_router, expenses_router, use
 
 settings = get_settings()
 
-app = FastAPI(title=settings.APP_NAME)
+app = FastAPI(
+    title=settings.APP_NAME,
+    description="AI-powered expense tracking API",
+    version="1.0.0"
+)
 
 # CORS per permettere richieste da React Native
 app.add_middleware(
@@ -25,7 +29,11 @@ app.include_router(users_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Spendly API"}
+    return {
+        "message": "Welcome to Spendly API",
+        "docs": "/docs",
+        "version": "1.0.0"
+    }
 
 
 @app.get("/health")
