@@ -24,7 +24,7 @@ class UserService:
     def create_user(db: Session, user: UserCreate) -> User:
         """
         Create a new user.
-        TODO: Check if email already exists.
+        Raises ValueError if email already exists.
         """
         # Check if user already exists
         existing_user = UserRepository.get_by_email(db, user.email)

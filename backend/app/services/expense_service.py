@@ -19,7 +19,7 @@ class ExpenseService:
         expense_data = expense.model_dump()
 
         # If no category provided and AI is available, use AI to suggest
-        if not expense_data.get("category_id") and settings.ANTHROPIC_API_KEY:
+        if not expense_data.get("category_id") and settings.OPENAI_API_KEY:
             try:
                 ai_service = AIService()
                 suggested_category_id, confidence = ai_service.categorize_expense(
@@ -36,6 +36,8 @@ class ExpenseService:
 
             except Exception as e:
                 print(f"AI categorization failed: {e}")
+                import traceback
+                traceback.print_exc()
 
         # Create expense with original or AI-suggested category
         expense_create = ExpenseCreate(**expense_data)

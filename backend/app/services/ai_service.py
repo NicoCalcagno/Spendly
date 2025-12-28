@@ -1,4 +1,4 @@
-from anthropic import Anthropic
+from openai import OpenAI
 from uuid import UUID
 from sqlalchemy.orm import Session
 from decimal import Decimal
@@ -13,10 +13,10 @@ settings = get_settings()
 
 class AIService:
     def __init__(self):
-        """Initialize Anthropic client"""
-        if not settings.ANTHROPIC_API_KEY:
-            raise ValueError("ANTHROPIC_API_KEY not configured")
-        self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        """Initialize OpenAI client"""
+        if not settings.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY not configured")
+        self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
     def categorize_expense(
         self,
@@ -26,7 +26,7 @@ class AIService:
         user_id: UUID
     ) -> tuple[UUID | None, float]:
         """
-        Use Claude AI to suggest a category for an expense by learning from user's past expenses.
+        Use GPT-4o-mini to suggest a category for an expense by learning from user's past expenses.
 
         Args:
             db: Database session
@@ -93,14 +93,17 @@ Respond ONLY with a JSON object in this exact format:
 The category must be one from the available categories list. Confidence should be 0.0-1.0."""
 
         try:
-            message = self.client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=150,
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that categorizes expenses. Always respond with valid JSON."},
+                    {"role": "user", "content": prompt}
+                ],
                 temperature=0.3,
-                messages=[{"role": "user", "content": prompt}]
+                max_tokens=150
             )
 
-            response_text = message.content[0].text.strip()
+            response_text = response.choices[0].message.content.strip()
 
             # Extract JSON from response
             if "```json" in response_text:
@@ -121,4 +124,6 @@ The category must be one from the available categories list. Confidence should b
 
         except Exception as e:
             print(f"AI categorization error: {e}")
+            import traceback
+            traceback.print_exc()
             return None, 0.0

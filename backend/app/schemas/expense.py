@@ -16,6 +16,8 @@ class ExpenseBase(BaseModel):
 class ExpenseCreate(ExpenseBase):
     """Schema for creating a new expense"""
     category_id: UUID | None = None  # Optional: can be set by AI if not provided
+    ai_suggested_category_id: UUID | None = None  # Set by AI service
+    ai_confidence_score: float | None = None  # AI confidence (0.0-1.0)
 
 
 class ExpenseUpdate(BaseModel):

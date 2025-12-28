@@ -31,15 +31,19 @@ class CategoryService:
     def update_category(db: Session, category_id: UUID, category_update: CategoryUpdate, user_id: UUID | None = None) -> Category | None:
         """
         Update a category.
-        TODO: Add validation to ensure user can only update their own categories.
+        Users can only update their own categories, not default ones.
         """
         category = CategoryRepository.get_by_id(db, category_id)
         if not category:
             return None
 
-        # TODO: Check if user owns this category (unless it's a default category)
-        # if category.user_id and category.user_id != user_id:
-        #     raise PermissionError("Cannot update another user's category")
+        # Don't allow updating default categories
+        if category.is_default:
+            raise ValueError("Cannot update default categories")
+
+        # Check if user owns this category
+        if category.user_id and category.user_id != user_id:
+            raise PermissionError("Cannot update another user's category")
 
         return CategoryRepository.update(db, category_id, category_update)
 
@@ -47,8 +51,8 @@ class CategoryService:
     def delete_category(db: Session, category_id: UUID, user_id: UUID | None = None) -> bool:
         """
         Delete a category.
-        TODO: Add validation to ensure user can only delete their own categories.
-        TODO: Handle expenses that reference this category.
+        Users can only delete their own categories.
+        Note: Expenses referencing this category will have category_id set to NULL (handled by DB with ON DELETE SET NULL).
         """
         category = CategoryRepository.get_by_id(db, category_id)
         if not category:
@@ -58,8 +62,8 @@ class CategoryService:
         if category.is_default:
             raise ValueError("Cannot delete default categories")
 
-        # TODO: Check if user owns this category
-        # if category.user_id != user_id:
-        #     raise PermissionError("Cannot delete another user's category")
+        # Check if user owns this category
+        if category.user_id and category.user_id != user_id:
+            raise PermissionError("Cannot delete another user's category")
 
         return CategoryRepository.delete(db, category_id)
