@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://spendly:spendly@localhost:5432/spendly"
 
     # Claude API
-    ANTHROPIC_API_KEY: str
+    ANTHROPIC_API_KEY: str | None = None
 
     # App
     APP_NAME: str = "Spendly"
