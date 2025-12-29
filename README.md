@@ -12,6 +12,14 @@
   An intelligent money tracker that learns from your spending habits and automatically categorizes expenses using AI.
 </p>
 
+## Screenshots
+
+<p align="center">
+  <img src="screen1.png" alt="Home Screen" width="250"/>
+  <img src="screen2.png" alt="Add Expense" width="250"/>
+  <img src="screen3.png" alt="Categories" width="250"/>
+</p>
+
 ## Features
 
 - AI-Powered Categorization - Automatically categorize expenses using OpenAI GPT-4o-mini
