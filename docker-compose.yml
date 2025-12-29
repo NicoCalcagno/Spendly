@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -17,6 +15,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - spendly-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spendly-backend
+    environment:
+      DATABASE_URL: postgresql://spendly:spendly@postgres:5432/spendly
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-in-production-use-long-random-string}
+      DEBUG: ${DEBUG:-True}
+      APP_NAME: ${APP_NAME:-Spendly}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    networks:
+      - spendly-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   postgres-data:
+
+networks:
+  spendly-network:
+    driver: bridge

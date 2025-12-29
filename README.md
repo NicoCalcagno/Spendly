@@ -14,7 +14,7 @@
 
 ## Features
 
-- AI-Powered Categorization - Automatically categorize expenses using Claude AI
+- AI-Powered Categorization - Automatically categorize expenses using OpenAI GPT-4o-mini
 - Smart Analytics - Beautiful insights into your spending patterns
 - Native iOS Experience - Built with React Native and Expo
 - Privacy First - Your financial data stays secure
@@ -35,12 +35,48 @@ spendly/
 ### Prerequisites
 
 - Node.js 20+
-- Python 3.11+
 - Docker Desktop
 - Expo Go app on your iPhone
-- Claude API key from https://console.anthropic.com
+- OpenAI API key from https://platform.openai.com
 
-### Backend Setup
+### Quick Start with Docker (Recommended)
+
+1. Configure environment:
+```bash
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
+```
+
+2. Start all services:
+```bash
+docker compose up -d --build
+```
+
+3. Run database migrations:
+```bash
+docker compose exec backend alembic upgrade head
+```
+
+4. Seed default categories:
+```bash
+docker compose exec backend python scripts/seed_categories.py
+```
+
+Backend API: http://localhost:8000
+
+API docs: http://localhost:8000/docs
+
+To view logs:
+```bash
+docker compose logs -f backend
+```
+
+To stop services:
+```bash
+docker compose down
+```
+
+### Alternative: Local Development Setup
 
 1. Create virtual environment:
 ```bash
@@ -56,19 +92,29 @@ pip install -r requirements.txt
 
 3. Configure environment:
 ```bash
-cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
-```
-
-4. Start PostgreSQL:
-```bash
 cd ..
-docker compose up -d
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
 ```
 
-5. Run the backend:
+4. Start PostgreSQL only:
+```bash
+docker compose up -d postgres
+```
+
+5. Run database migrations:
 ```bash
 cd backend
+alembic upgrade head
+```
+
+6. Seed default categories:
+```bash
+python scripts/seed_categories.py
+```
+
+7. Run the backend:
+```bash
 uvicorn app.main:app --reload
 ```
 
@@ -105,7 +151,7 @@ npm start
 - FastAPI - Modern Python web framework
 - SQLAlchemy - SQL toolkit and ORM
 - PostgreSQL - Relational database
-- Anthropic Claude - AI for expense categorization
+- OpenAI GPT-4o-mini - AI for expense categorization
 
 ### Infrastructure
 - Docker - Containerization
@@ -137,5 +183,5 @@ Nicolò Calcagno - AI Engineer & Software Engineer
 
 ## Acknowledgments
 
-- Powered by Anthropic Claude for AI categorization
+- Powered by OpenAI GPT-4o-mini for AI categorization
 - Built with Expo and FastAPI
